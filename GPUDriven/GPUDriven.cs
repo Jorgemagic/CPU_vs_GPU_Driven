@@ -1,11 +1,12 @@
-﻿using Common;
+using Common;
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Common.Images;
 using Evergine.Common.Graphics;
 using Evergine.Common.Graphics.VertexFormats;
 using Evergine.Mathematics;
 using Buffer = Evergine.Common.Graphics.Buffer;
-using Common.Images;
 
 namespace GPUDriven
 {
@@ -17,71 +18,70 @@ namespace GPUDriven
         private const float CubeSpacing = 1.1f;
         private const float FarPlane = 1000f;
 
-       private VertexPositionColorTexture[] vertexData = new VertexPositionColorTexture[]
-       {
-            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(1, 0)), // Front
+        private VertexPositionColorTexture[] vertexData = new VertexPositionColorTexture[]
+        {
+            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,   1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f,  1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  -1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(1, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f,   1.0f, -1.0f), new Color(1.0f, 0.0f, 0.0f, 1.0f), new Vector2(0, 1)),
 
-            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)), // BACK
+            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f,  1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,   1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,   1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f,  -1.0f,  1.0f), new Color(0.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 1)),
 
-            new VertexPositionColorTexture(new Vector3(-1.0f, 1.0f, -1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)), // Top
+            new VertexPositionColorTexture(new Vector3(-1.0f, 1.0f, -1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f,  1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f, 1.0f,  1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f, 1.0f, -1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f, -1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f,  1.0f), new Color(0.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 1)),
 
-            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)), // Bottom
+            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f,  1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  -1.0f,  1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  -1.0f,  1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f,  -1.0f, -1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f), new Vector2(1, 1)),
 
-            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)), // Left
+            new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f,  1.0f,  1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f,  1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f, -1.0f, -1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(-1.0f,  1.0f, -1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(1, 1)),
             new VertexPositionColorTexture(new Vector3(-1.0f,  1.0f,  1.0f), new Color(1.0f, 0.0f, 1.0f, 1.0f), new Vector2(0, 1)),
 
-            new VertexPositionColorTexture(new Vector3(1.0f, -1.0f, -1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(1, 0)), // Right
+            new VertexPositionColorTexture(new Vector3(1.0f, -1.0f, -1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f, -1.0f,  1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(0, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f,  1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f, -1.0f, -1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(1, 0)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f,  1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(0, 1)),
             new VertexPositionColorTexture(new Vector3(1.0f,  1.0f, -1.0f), new Color(0.0f, 1.0f, 1.0f, 1.0f), new Vector2(1, 1)),
-       };
+        };
 
         private Viewport[] viewports;
         private Rectangle[] scissors;
         private CommandQueue commandQueue;
         private GraphicsPipelineState pipelineState;
+        private ComputePipelineState computePipelineState;
         private Buffer[] vertexBuffers;
-        private ResourceLayout resourceLayout;
-        private ResourceSet resourceSet;
-        private Buffer constantBuffer;
-        private Matrix4x4[] worldViewProjMatrices;
-        private uint constantBufferElementSize;
-        private uint constantBufferStride;
+        private ResourceLayout graphicsResourceLayout;
+        private ResourceLayout computeResourceLayout;
+        private ResourceSet graphicsResourceSet;
+        private ResourceSet computeResourceSet;
+        private Buffer viewParamsBuffer;
+        private Buffer instanceDataBuffer;
+        private Buffer indirectArgsBuffer;
         private int cubeCount;
 
         private Matrix4x4 view;
         private Matrix4x4 proj;
         private float time;
-
-        public GPUDriven()
-        {
-        }
+        private ViewParams viewParams;
 
         protected override void OnResized(uint width, uint height)
         {
@@ -92,17 +92,17 @@ namespace GPUDriven
 
         protected override async void InternalLoad()
         {
-            // Compile Vertex and Pixel shaders
             var vertexShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "VertexShader", ShaderStages.Vertex, "VS");
             var pixelShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "FragmentShader", ShaderStages.Pixel, "PS");
+            var computeShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "ComputeShader", ShaderStages.Compute, "CS");
 
             var vertexShader = this.graphicsContext.Factory.CreateShader(ref vertexShaderDescription);
             var pixelShader = this.graphicsContext.Factory.CreateShader(ref pixelShaderDescription);
+            var computeShader = this.graphicsContext.Factory.CreateShader(ref computeShaderDescription);
 
             var vertexBufferDescription = new BufferDescription((uint)(Unsafe.SizeOf<VertexPositionColorTexture>() * this.vertexData.Length), BufferFlags.VertexBuffer, ResourceUsage.Default);
             var vertexBuffer = this.graphicsContext.Factory.CreateBuffer(this.vertexData, ref vertexBufferDescription);
 
-            // Create Texture from file
             Texture texture2D = null;
             using (var stream = this.assetsDirectory.Open("crate.ktx"))
             {
@@ -110,7 +110,7 @@ namespace GPUDriven
                 {
                     Image image = Image.Load(stream);
                     var textureDescription = image.TextureDescription;
-                    texture2D = graphicsContext.Factory.CreateTexture(image.DataBoxes, ref textureDescription);
+                    texture2D = this.graphicsContext.Factory.CreateTexture(image.DataBoxes, ref textureDescription);
                 }
             }
 
@@ -118,40 +118,63 @@ namespace GPUDriven
             var sampler = this.graphicsContext.Factory.CreateSamplerState(ref samplerDescription);
 
             this.cubeCount = CubeColumns * CubeRows;
-            this.worldViewProjMatrices = new Matrix4x4[this.cubeCount];
 
             float cameraDistance = Math.Max(CubeColumns, CubeRows) * CubeSpacing * 1.4f;
             this.view = Matrix4x4.CreateLookAt(new Vector3(0, 0, cameraDistance), new Vector3(0, 0, 0), Vector3.UnitY);
             this.proj = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, (float)this.frameBuffer.Width / (float)this.frameBuffer.Height, 0.1f, FarPlane, reverseDepthBuffer: true);
 
-            // Constant Buffer
-            this.constantBufferElementSize = (uint)Unsafe.SizeOf<Matrix4x4>();
-            uint constantBufferAlignment = 256;
-            this.constantBufferStride = ((this.constantBufferElementSize + (constantBufferAlignment - 1)) / constantBufferAlignment) * constantBufferAlignment;
-            var constantBufferDescription = new BufferDescription(
-                this.constantBufferStride * (uint)this.cubeCount,
-                BufferFlags.ConstantBuffer,
-                ResourceUsage.Dynamic,
-                ResourceCpuAccess.Write,
-                0);
-            this.constantBuffer = this.graphicsContext.Factory.CreateBuffer(ref constantBufferDescription);
+            var viewParamsBufferDescription = new BufferDescription((uint)Unsafe.SizeOf<ViewParams>(), BufferFlags.ConstantBuffer, ResourceUsage.Default);
+            this.viewParamsBuffer = this.graphicsContext.Factory.CreateBuffer(ref viewParamsBufferDescription);
 
-            // Prepare Pipeline
+            var instanceDataBufferDescription = new BufferDescription(
+                (uint)(Unsafe.SizeOf<InstanceData>() * this.cubeCount),
+                BufferFlags.UnorderedAccess | BufferFlags.BufferStructured | BufferFlags.ShaderResource,
+                ResourceUsage.Default,
+                ResourceCpuAccess.None,
+                Unsafe.SizeOf<InstanceData>());
+            this.instanceDataBuffer = this.graphicsContext.Factory.CreateBuffer(ref instanceDataBufferDescription);
+
+            var indirectArgsBufferDescription = new BufferDescription(
+                (uint)Unsafe.SizeOf<IndirectDrawArgs>(),
+                BufferFlags.IndirectBuffer | BufferFlags.UnorderedAccess | BufferFlags.BufferStructured | BufferFlags.ShaderResource,
+                ResourceUsage.Default,
+                ResourceCpuAccess.None,
+                Unsafe.SizeOf<IndirectDrawArgs>());
+            this.indirectArgsBuffer = this.graphicsContext.Factory.CreateBuffer(ref indirectArgsBufferDescription);
+
             var vertexLayouts = new InputLayouts()
                   .Add(VertexPositionColorTexture.VertexFormat);
 
-            var resourceLayoutDescription = new ResourceLayoutDescription(
-                    new LayoutElementDescription(0, ResourceType.ConstantBuffer, ShaderStages.Vertex, true, this.constantBufferElementSize),
-                    new LayoutElementDescription(0, ResourceType.TextureView, ShaderStages.Pixel),
+            var graphicsResourceLayoutDescription = new ResourceLayoutDescription(
+                    new LayoutElementDescription(0, ResourceType.StructuredBuffer, ShaderStages.Vertex),
+                    new LayoutElementDescription(1, ResourceType.TextureView, ShaderStages.Pixel),
                     new LayoutElementDescription(0, ResourceType.Sampler, ShaderStages.Pixel));
+            this.graphicsResourceLayout = this.graphicsContext.Factory.CreateResourceLayout(ref graphicsResourceLayoutDescription);
 
-            this.resourceLayout = this.graphicsContext.Factory.CreateResourceLayout(ref resourceLayoutDescription);
+            var computeResourceLayoutDescription = new ResourceLayoutDescription(
+                new LayoutElementDescription(0, ResourceType.ConstantBuffer, ShaderStages.Compute),
+                new LayoutElementDescription(0, ResourceType.StructuredBufferReadWrite, ShaderStages.Compute),
+                new LayoutElementDescription(1, ResourceType.StructuredBufferReadWrite, ShaderStages.Compute));
+            this.computeResourceLayout = this.graphicsContext.Factory.CreateResourceLayout(ref computeResourceLayoutDescription);
+
+            var computePipelineDescription = new ComputePipelineDescription()
+            {
+                shaderDescription = new ComputeShaderStateDescription()
+                {
+                    ComputeShader = computeShader
+                },
+                ResourceLayouts = new[] { this.computeResourceLayout },
+                ThreadGroupSizeX = 64,
+                ThreadGroupSizeY = 1,
+                ThreadGroupSizeZ = 1,
+            };
+            this.computePipelineState = this.graphicsContext.Factory.CreateComputePipeline(ref computePipelineDescription);
 
             var pipelineDescription = new GraphicsPipelineDescription()
             {
                 PrimitiveTopology = PrimitiveTopology.TriangleList,
                 InputLayouts = vertexLayouts,
-                ResourceLayouts = new[] { this.resourceLayout },
+                ResourceLayouts = new[] { this.graphicsResourceLayout },
                 Shaders = new GraphicsShaderStateDescription()
                 {
                     VertexShader = vertexShader,
@@ -181,43 +204,44 @@ namespace GPUDriven
             this.vertexBuffers = new Buffer[1];
             this.vertexBuffers[0] = vertexBuffer;
 
-            var resourceSetDescription = new ResourceSetDescription(this.resourceLayout, this.constantBuffer, texture2D, sampler);
-            this.resourceSet = this.graphicsContext.Factory.CreateResourceSet(ref resourceSetDescription);
+            var graphicsResourceSetDescription = new ResourceSetDescription(this.graphicsResourceLayout, this.instanceDataBuffer, texture2D, sampler);
+            this.graphicsResourceSet = this.graphicsContext.Factory.CreateResourceSet(ref graphicsResourceSetDescription);
+
+            var computeResourceSetDescription = new ResourceSetDescription(this.computeResourceLayout, this.viewParamsBuffer, this.instanceDataBuffer, this.indirectArgsBuffer);
+            this.computeResourceSet = this.graphicsContext.Factory.CreateResourceSet(ref computeResourceSetDescription);
 
             this.MarkAsLoaded();
         }
 
         protected override void InternalDrawCallback(TimeSpan gameTime)
         {
-            // Update
             this.time += (float)gameTime.TotalSeconds;
-            var viewProj = Matrix4x4.Multiply(this.view, this.proj);
-            this.UpdateWorldViewProjMatrices(viewProj);
+            this.viewParams.ViewProj = Matrix4x4.Multiply(this.view, this.proj);
+            this.viewParams.GridInfo0 = new Vector4(this.time, CubeColumns, CubeRows, this.cubeCount);
+            this.viewParams.GridInfo1 = new Vector4(CubeScale, CubeSpacing, (CubeColumns - 1) * CubeSpacing, (CubeRows - 1) * CubeSpacing);
+            this.viewParams.DrawInfo = new Vector4(this.vertexData.Length, 0, 0, 0);
 
-            // Draw
             var commandBuffer = this.commandQueue.CommandBuffer();
 
             commandBuffer.Begin();
 
-            for (int i = 0; i < this.cubeCount; i++)
-            {
-                commandBuffer.UpdateBufferData(this.constantBuffer, ref this.worldViewProjMatrices[i], this.constantBufferStride * (uint)i);
-            }
+            commandBuffer.UpdateBufferData(this.viewParamsBuffer, ref this.viewParams);
+
+            commandBuffer.SetComputePipelineState(this.computePipelineState);
+            commandBuffer.SetResourceSet(this.computeResourceSet);
+            commandBuffer.Dispatch((uint)((this.cubeCount + 63) / 64), 1, 1);
+            commandBuffer.ResourceBarrierUnorderedAccessView(this.instanceDataBuffer);
+            commandBuffer.ResourceBarrierUnorderedAccessView(this.indirectArgsBuffer);
 
             RenderPassDescription renderPassDescription = new RenderPassDescription(this.frameBuffer, new ClearValue(ClearFlags.All, 0, 0, Color.CornflowerBlue));
             commandBuffer.BeginRenderPass(ref renderPassDescription);
 
             commandBuffer.SetViewports(this.viewports);
             commandBuffer.SetScissorRectangles(this.scissors);
-
             commandBuffer.SetGraphicsPipelineState(this.pipelineState);
             commandBuffer.SetVertexBuffers(this.vertexBuffers);
-
-            for (int i = 0; i < this.cubeCount; i++)
-            {
-                commandBuffer.SetResourceSet(this.resourceSet, 0, new uint[] { this.constantBufferStride * (uint)i });
-                commandBuffer.Draw((uint)this.vertexData.Length);
-            }
+            commandBuffer.SetResourceSet(this.graphicsResourceSet);
+            commandBuffer.DrawInstancedIndirect(this.indirectArgsBuffer, 0, 1, (uint)Unsafe.SizeOf<IndirectDrawArgs>());
 
             commandBuffer.EndRenderPass();
             commandBuffer.End();
@@ -228,29 +252,28 @@ namespace GPUDriven
             this.commandQueue.WaitIdle();
         }
 
-        private void UpdateWorldViewProjMatrices(Matrix4x4 viewProj)
+        [StructLayout(LayoutKind.Sequential)]
+        private struct ViewParams
         {
-            float totalWidth = (CubeColumns - 1) * CubeSpacing;
-            float totalHeight = (CubeRows - 1) * CubeSpacing;
-            Matrix4x4 rotation = Matrix4x4.CreateRotationX(this.time) *
-                                 Matrix4x4.CreateRotationY(this.time * 2) *
-                                 Matrix4x4.CreateRotationZ(this.time * .7f);
+            public Matrix4x4 ViewProj;
+            public Vector4 GridInfo0;
+            public Vector4 GridInfo1;
+            public Vector4 DrawInfo;
+        }
 
-            int index = 0;
-            for (int y = 0; y < CubeRows; y++)
-            {
-                float positionY = (y * CubeSpacing) - (totalHeight * 0.5f);
+        [StructLayout(LayoutKind.Sequential)]
+        private struct InstanceData
+        {
+            public Matrix4x4 WorldViewProj;
+        }
 
-                for (int x = 0; x < CubeColumns; x++)
-                {
-                    float positionX = (x * CubeSpacing) - (totalWidth * 0.5f);
-                    Matrix4x4 world = Matrix4x4.CreateScale(CubeScale) *
-                                      rotation *
-                                      Matrix4x4.CreateTranslation(positionX, positionY, 0);
-
-                    this.worldViewProjMatrices[index++] = world * viewProj;
-                }
-            }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct IndirectDrawArgs
+        {
+            public uint VertexCountPerInstance;
+            public uint InstanceCount;
+            public uint StartVertexLocation;
+            public uint StartInstanceLocation;
         }
     }
 }
