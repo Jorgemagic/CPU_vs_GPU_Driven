@@ -31,6 +31,7 @@ struct VS_IN
     float4 pos : POSITION;
     float4 col : COLOR;
     float2 tex : TEXCOORD;
+    uint objectIndex : TEXCOORD1;
 };
 
 struct PS_IN
@@ -100,18 +101,15 @@ void CS(uint3 dispatchThreadId : SV_DispatchThreadID)
     uint index = dispatchThreadId.x;
     uint cubeCount = (uint)gridInfo0.w;
 
-    if (index == 0)
-    {
-        IndirectArgs[0].vertexCountPerInstance = (uint)drawInfo.x;
-        IndirectArgs[0].instanceCount = cubeCount;
-        IndirectArgs[0].startVertexLocation = 0;
-        IndirectArgs[0].startInstanceLocation = 0;
-    }
-
     if (index >= cubeCount)
     {
         return;
     }
+
+    IndirectArgs[index].vertexCountPerInstance = (uint)drawInfo.x;
+    IndirectArgs[index].instanceCount = 1;
+    IndirectArgs[index].startVertexLocation = index * (uint)drawInfo.x;
+    IndirectArgs[index].startInstanceLocation = 0;
 
     uint columns = (uint)gridInfo0.y;
     uint x = index % columns;
@@ -129,11 +127,11 @@ void CS(uint3 dispatchThreadId : SV_DispatchThreadID)
     RWInstances[index].worldViewProj = mul(world, viewProj);
 }
 
-PS_IN VS(VS_IN input, uint instanceId : SV_InstanceID)
+PS_IN VS(VS_IN input)
 {
     PS_IN output = (PS_IN)0;
 
-    output.pos = mul(input.pos, Instances[instanceId].worldViewProj);
+    output.pos = mul(input.pos, Instances[input.objectIndex].worldViewProj);
     output.col = input.col;
     output.tex = input.tex;
 
