@@ -23,7 +23,7 @@ StructuredBuffer<InstanceData> Instances : register(t0);
 RWStructuredBuffer<InstanceData> RWInstances : register(u0);
 RWStructuredBuffer<IndirectDrawArgs> IndirectArgs : register(u1);
 
-Texture2D DiffuseTexture : register(t1);
+Texture2D DiffuseAtlas : register(t1);
 SamplerState Sampler : register(s0);
 
 struct VS_IN
@@ -32,6 +32,7 @@ struct VS_IN
     float4 col : COLOR;
     float2 tex : TEXCOORD;
     uint objectIndex : TEXCOORD1;
+    uint materialIndex : TEXCOORD2;
 };
 
 struct PS_IN
@@ -39,6 +40,7 @@ struct PS_IN
     float4 pos : SV_POSITION;
     float4 col : COLOR;
     float2 tex : TEXCOORD;
+    nointerpolation uint materialIndex : TEXCOORD1;
 };
 
 float4x4 CreateScale(float scale)
@@ -134,11 +136,30 @@ PS_IN VS(VS_IN input)
     output.pos = mul(input.pos, Instances[input.objectIndex].worldViewProj);
     output.col = input.col;
     output.tex = input.tex;
+    output.materialIndex = input.materialIndex;
 
     return output;
 }
 
 float4 PS(PS_IN input) : SV_Target
 {
-    return DiffuseTexture.Sample(Sampler, input.tex);
+    uint tileIndex = input.materialIndex & 3;
+    float2 tileOffset = float2(tileIndex & 1, tileIndex >> 1) * 0.5f;
+    float2 atlasUV = input.tex * 0.5f + tileOffset;
+
+    float4 materialTint = 1.0f;
+    if (tileIndex == 1)
+    {
+        materialTint = float4(1.0f, 0.82f, 0.72f, 1.0f);
+    }
+    else if (tileIndex == 2)
+    {
+        materialTint = float4(0.72f, 0.9f, 1.0f, 1.0f);
+    }
+    else if (tileIndex == 3)
+    {
+        materialTint = float4(0.86f, 1.0f, 0.72f, 1.0f);
+    }
+
+    return DiffuseAtlas.Sample(Sampler, atlasUV) * materialTint;
 }

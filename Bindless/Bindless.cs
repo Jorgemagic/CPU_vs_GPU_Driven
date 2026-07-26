@@ -113,6 +113,7 @@ namespace GPUDriven
                         Color = source.Color,
                         TexCoord = source.TexCoord,
                         ObjectIndex = objectIndex,
+                        MaterialIndex = objectIndex % 4,
                     };
                 }
             }
@@ -164,7 +165,8 @@ namespace GPUDriven
                       .Add(new ElementDescription(ElementFormat.Float3, ElementSemanticType.Position))
                       .Add(new ElementDescription(ElementFormat.UByte4Normalized, ElementSemanticType.Color))
                       .Add(new ElementDescription(ElementFormat.Float2, ElementSemanticType.TexCoord, 0))
-                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 1)));
+                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 1))
+                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 2)));
 
             var graphicsResourceLayoutDescription = new ResourceLayoutDescription(
                     new LayoutElementDescription(0, ResourceType.ConstantBuffer, ShaderStages.Vertex),
@@ -241,7 +243,7 @@ namespace GPUDriven
             this.viewParams.ViewProj = Matrix4x4.Multiply(this.view, this.proj);
             this.viewParams.GridInfo0 = new Vector4(this.time, CubeColumns, CubeRows, this.cubeCount);
             this.viewParams.GridInfo1 = new Vector4(CubeScale, CubeSpacing, (CubeColumns - 1) * CubeSpacing, (CubeRows - 1) * CubeSpacing);
-            this.viewParams.DrawInfo = new Vector4(this.vertexData.Length, 0, 0, 0);
+            this.viewParams.DrawInfo = new Vector4(this.vertexData.Length, 4, 0, 0);
 
             var commandBuffer = this.commandQueue.CommandBuffer();
 
@@ -262,12 +264,9 @@ namespace GPUDriven
             commandBuffer.SetScissorRectangles(this.scissors);
             commandBuffer.SetGraphicsPipelineState(this.pipelineState);
             commandBuffer.SetVertexBuffers(this.vertexBuffers);            
-                commandBuffer.SetResourceSet(this.graphicsResourceSet);
+            commandBuffer.SetResourceSet(this.graphicsResourceSet);
             uint indirectDrawStride = (uint)Unsafe.SizeOf<IndirectDrawArgs>();
-            for (int i = 0; i < this.cubeCount; i++)
-            {
-                commandBuffer.DrawInstancedIndirect(this.indirectArgsBuffer, indirectDrawStride * (uint)i, 1, indirectDrawStride);
-            }
+            commandBuffer.DrawInstancedIndirect(this.indirectArgsBuffer, 0, (uint)this.cubeCount, indirectDrawStride);
 
             commandBuffer.EndRenderPass();
             commandBuffer.End();
@@ -294,6 +293,7 @@ namespace GPUDriven
             public Color Color;
             public Vector2 TexCoord;
             public uint ObjectIndex;
+            public uint MaterialIndex;
         }
 
         [StructLayout(LayoutKind.Sequential)]
