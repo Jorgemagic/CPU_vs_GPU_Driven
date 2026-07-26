@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GPUDriven", "GPUDriven\GPUDriven.csproj", "{AB522677-C47C-4CC1-877E-8B069D095F2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bindless", "Bindless\Bindless.csproj", "{6BEBC093-5E4C-4EC8-A459-5D805FBC5A64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{AB522677-C47C-4CC1-877E-8B069D095F2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB522677-C47C-4CC1-877E-8B069D095F2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB522677-C47C-4CC1-877E-8B069D095F2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BEBC093-5E4C-4EC8-A459-5D805FBC5A64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BEBC093-5E4C-4EC8-A459-5D805FBC5A64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BEBC093-5E4C-4EC8-A459-5D805FBC5A64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BEBC093-5E4C-4EC8-A459-5D805FBC5A64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
