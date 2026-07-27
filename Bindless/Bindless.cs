@@ -94,7 +94,7 @@ namespace GPUDriven
         {
             var vertexShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "VertexShader", ShaderStages.Vertex, "VS");
             var pixelShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "FragmentShader", ShaderStages.Pixel, "PS");
-            var computeShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "ComputeShader", ShaderStages.Compute, "CS");
+            var computeShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "CS", "ComputeShader", ShaderStages.Compute, "CS");
 
             var vertexShader = this.graphicsContext.Factory.CreateShader(ref vertexShaderDescription);
             var pixelShader = this.graphicsContext.Factory.CreateShader(ref pixelShaderDescription);
@@ -113,7 +113,6 @@ namespace GPUDriven
                         Color = source.Color,
                         TexCoord = source.TexCoord,
                         ObjectIndex = objectIndex,
-                        MaterialIndex = objectIndex % 4,
                     };
                 }
             }
@@ -165,8 +164,7 @@ namespace GPUDriven
                       .Add(new ElementDescription(ElementFormat.Float3, ElementSemanticType.Position))
                       .Add(new ElementDescription(ElementFormat.UByte4Normalized, ElementSemanticType.Color))
                       .Add(new ElementDescription(ElementFormat.Float2, ElementSemanticType.TexCoord, 0))
-                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 1))
-                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 2)));
+                      .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 1)));
 
             var graphicsResourceLayoutDescription = new ResourceLayoutDescription(
                     new LayoutElementDescription(0, ResourceType.ConstantBuffer, ShaderStages.Vertex),
@@ -293,13 +291,13 @@ namespace GPUDriven
             public Color Color;
             public Vector2 TexCoord;
             public uint ObjectIndex;
-            public uint MaterialIndex;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         private struct InstanceData
         {
             public Matrix4x4 WorldViewProj;
+            public uint MaterialIndex;
         }
 
         [StructLayout(LayoutKind.Sequential)]

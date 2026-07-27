@@ -94,7 +94,7 @@ namespace GPUDriven
         {
             var vertexShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "VertexShader", ShaderStages.Vertex, "VS");
             var pixelShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "FragmentShader", ShaderStages.Pixel, "PS");
-            var computeShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "HLSL", "ComputeShader", ShaderStages.Compute, "CS");
+            var computeShaderDescription = await this.assetsDirectory.ReadAndCompileShader(this.graphicsContext, "CS", "ComputeShader", ShaderStages.Compute, "CS");
 
             var vertexShader = this.graphicsContext.Factory.CreateShader(ref vertexShaderDescription);
             var pixelShader = this.graphicsContext.Factory.CreateShader(ref pixelShaderDescription);
