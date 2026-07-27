@@ -90,8 +90,8 @@ void CS(uint3 dispatchThreadId : SV_DispatchThreadID)
 
     IndirectArgs[index].vertexCountPerInstance = (uint)drawInfo.x;
     IndirectArgs[index].instanceCount = 1;
-    IndirectArgs[index].startVertexLocation = index * (uint)drawInfo.x;
-    IndirectArgs[index].startInstanceLocation = 0;
+    IndirectArgs[index].startVertexLocation = 0;
+    IndirectArgs[index].startInstanceLocation = index;
 
     uint columns = (uint)gridInfo0.y;
     uint x = index % columns;

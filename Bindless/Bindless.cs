@@ -100,25 +100,18 @@ namespace GPUDriven
             var pixelShader = this.graphicsContext.Factory.CreateShader(ref pixelShaderDescription);
             var computeShader = this.graphicsContext.Factory.CreateShader(ref computeShaderDescription);
 
-            var expandedVertexData = new VertexData[this.vertexData.Length * CubeColumns * CubeRows];
-            for (uint objectIndex = 0; objectIndex < CubeColumns * CubeRows; objectIndex++)
+            var vertexBufferDescription = new BufferDescription((uint)(Unsafe.SizeOf<VertexPositionColorTexture>() * this.vertexData.Length), BufferFlags.VertexBuffer, ResourceUsage.Default);
+            var vertexBuffer = this.graphicsContext.Factory.CreateBuffer(this.vertexData, ref vertexBufferDescription);
+
+            this.cubeCount = CubeColumns * CubeRows;
+            var objectIndices = new uint[this.cubeCount];
+            for (uint objectIndex = 0; objectIndex < this.cubeCount; objectIndex++)
             {
-                int objectVertexOffset = (int)objectIndex * this.vertexData.Length;
-                for (int vertexIndex = 0; vertexIndex < this.vertexData.Length; vertexIndex++)
-                {
-                    VertexPositionColorTexture source = this.vertexData[vertexIndex];
-                    expandedVertexData[objectVertexOffset + vertexIndex] = new VertexData()
-                    {
-                        Position = source.Position,
-                        Color = source.Color,
-                        TexCoord = source.TexCoord,
-                        ObjectIndex = objectIndex,
-                    };
-                }
+                objectIndices[objectIndex] = objectIndex;
             }
 
-            var vertexBufferDescription = new BufferDescription((uint)(Unsafe.SizeOf<VertexData>() * expandedVertexData.Length), BufferFlags.VertexBuffer, ResourceUsage.Default);
-            var vertexBuffer = this.graphicsContext.Factory.CreateBuffer(expandedVertexData, ref vertexBufferDescription);
+            var objectIndexBufferDescription = new BufferDescription((uint)(Unsafe.SizeOf<uint>() * objectIndices.Length), BufferFlags.VertexBuffer, ResourceUsage.Default);
+            var objectIndexBuffer = this.graphicsContext.Factory.CreateBuffer(objectIndices, ref objectIndexBufferDescription);
 
             Texture texture2D = null;
             using (var stream = this.assetsDirectory.Open("crate.ktx"))
@@ -133,8 +126,6 @@ namespace GPUDriven
 
             SamplerStateDescription samplerDescription = SamplerStates.LinearClamp;
             var sampler = this.graphicsContext.Factory.CreateSamplerState(ref samplerDescription);
-
-            this.cubeCount = CubeColumns * CubeRows;
 
             float cameraDistance = Math.Max(CubeColumns, CubeRows) * CubeSpacing * 1.4f;
             this.view = Matrix4x4.CreateLookAt(new Vector3(0, 0, cameraDistance), new Vector3(0, 0, 0), Vector3.UnitY);
@@ -163,7 +154,8 @@ namespace GPUDriven
                   .Add(new LayoutDescription()
                       .Add(new ElementDescription(ElementFormat.Float3, ElementSemanticType.Position))
                       .Add(new ElementDescription(ElementFormat.UByte4Normalized, ElementSemanticType.Color))
-                      .Add(new ElementDescription(ElementFormat.Float2, ElementSemanticType.TexCoord, 0))
+                      .Add(new ElementDescription(ElementFormat.Float2, ElementSemanticType.TexCoord, 0)))
+                  .Add(new LayoutDescription(VertexStepFunction.PerInstanceData, 1)
                       .Add(new ElementDescription(ElementFormat.UInt, ElementSemanticType.TexCoord, 1)));
 
             var graphicsResourceLayoutDescription = new ResourceLayoutDescription(
@@ -223,8 +215,7 @@ namespace GPUDriven
             this.scissors = new Rectangle[1];
             this.scissors[0] = new Rectangle(0, 0, (int)width, (int)height);
 
-            this.vertexBuffers = new Buffer[1];
-            this.vertexBuffers[0] = vertexBuffer;
+            this.vertexBuffers = new Buffer[] { vertexBuffer, objectIndexBuffer };
 
             var graphicsResourceSetDescription = new ResourceSetDescription(this.graphicsResourceLayout, this.viewParamsBuffer, this.instanceDataBuffer, texture2D, sampler);
             this.graphicsResourceSet = this.graphicsContext.Factory.CreateResourceSet(ref graphicsResourceSetDescription);
@@ -282,15 +273,6 @@ namespace GPUDriven
             public Vector4 GridInfo0;
             public Vector4 GridInfo1;
             public Vector4 DrawInfo;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct VertexData
-        {
-            public Vector3 Position;
-            public Color Color;
-            public Vector2 TexCoord;
-            public uint ObjectIndex;
         }
 
         [StructLayout(LayoutKind.Sequential)]
